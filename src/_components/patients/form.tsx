@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
-import api from "@/convex/_generated/api";
+import { api } from "../../../convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "../../components/ui/button";
@@ -16,10 +17,19 @@ interface PatientFormProps {
 }
 
 export function PatientForm({ fields }: PatientFormProps) {
+  const { getToken } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const uploadReport = useMutation(api.reports.uploadReport);
+
+  // Debug: log the token when the component mounts
+  useEffect(() => {
+    (async () => {
+      const token = await getToken();
+      console.log("Convex token:", token);
+    })();
+  }, [getToken]);
 
   const commonToastStyle = {
     style: {
@@ -31,10 +41,7 @@ export function PatientForm({ fields }: PatientFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const toastId = toast.loading("Uploading X-Ray...", {
-      ...commonToastStyle,
-    });
-
+    const toastId = toast.loading("Uploading X-Ray...", { ...commonToastStyle });
     try {
       const formData = new FormData(e.currentTarget as HTMLFormElement);
       const file = formData.get("xray") as File;
@@ -42,8 +49,10 @@ export function PatientForm({ fields }: PatientFormProps) {
 
       // Validate inputs
       if (!file) throw new Error("No file selected");
-      if (file.size > 10 * 1024 * 1024) throw new Error("File too large (max 10MB)");
-      if (!XRAY_TYPES.includes(xrayType)) throw new Error("Invalid X-Ray type");
+      if (file.size > 10 * 1024 * 1024)
+        throw new Error("File too large (max 10MB)");
+      if (!XRAY_TYPES.includes(xrayType))
+        throw new Error("Invalid X-Ray type");
 
       // Step 1: Get an upload URL
       const uploadUrl = await generateUploadUrl();
@@ -100,7 +109,7 @@ export function PatientForm({ fields }: PatientFormProps) {
               name={field.name}
               required={field.required}
               disabled={isSubmitting}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="">Select {field.label}</option>
               {field.options?.map((option) => (
@@ -139,7 +148,7 @@ export function PatientForm({ fields }: PatientFormProps) {
           name="xrayType"
           required
           disabled={isSubmitting}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="">Select X-Ray Type</option>
           {XRAY_TYPES.map((type) => (
@@ -164,8 +173,7 @@ export function PatientForm({ fields }: PatientFormProps) {
         />
         {file && (
           <p className="text-sm text-muted-foreground">
-            Selected: {file.name} (
-            {(file.size / 1024 / 1024).toFixed(2)} MB)
+            Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
           </p>
         )}
       </div>

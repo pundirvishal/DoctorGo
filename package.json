@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "set CONVEX_TMPDIR=./convex/.convex_temp&& vite",
+    "convex": "set CONVEX_TMPDIR=./convex/.convex_temp&& npx convex dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

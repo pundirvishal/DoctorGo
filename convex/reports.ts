@@ -2,7 +2,7 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 
-// Define the full report document type
+// Define the full report document type.
 interface ReportDoc {
   _id: Id<"reports">;
   _creationTime: number;
@@ -25,13 +25,23 @@ export const uploadReport = mutation({
     age: v.number(),
   },
   handler: async (ctx, args): Promise<ReportDoc> => {
+    // Use ctx.auth.getUserIdentity() provided via Clerk.
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    const imageUrl = await ctx.storage.getUrl(args.storageId);
+    console.log("Identity:", identity);
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+    
+    // Extract user ID and organization ID from the identity.
+    // The identity.subject contains the user ID (from Clerk)
+    // identity.orgId may be available depending on your integration.
+    const userId = identity.subject;
     const orgId = identity.orgId ? identity.orgId.toString() : "personal";
     
-    // Create the report object with all required fields
+    // Get the image URL from Convex storage.
+    const imageUrl = await ctx.storage.getUrl(args.storageId);
+
+    // Create the report object with all required fields.
     const reportData = {
       patientName: args.patientName,
       age: args.age,
@@ -39,16 +49,15 @@ export const uploadReport = mutation({
       diagnosis: "Pending Analysis",
       confidence: 0,
       findings: "",
-      userId: identity.subject,
+      userId,
       orgId,
       status: "pending" as const,
       createdAt: Date.now(),
     };
 
-    // Insert and type assert the result
+    // Insert the report into your database.
     const reportId = await ctx.db.insert("reports", reportData);
     const report = await ctx.db.get(reportId);
-    
     if (!report) throw new Error("Failed to create report");
     return report as ReportDoc;
   },
@@ -56,17 +65,22 @@ export const uploadReport = mutation({
 
 export const getReports = query({
   handler: async (ctx): Promise<ReportDoc[]> => {
+    // Retrieve the current user's identity.
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
     
+    // Use the organization ID from identity to filter reports.
     const orgId = identity.orgId ? identity.orgId.toString() : "personal";
     
+    // Query reports by organization.
     const reports = await ctx.db
       .query("reports")
-      .withIndex("by_org", q => q.eq("orgId", orgId))
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
       .order("desc")
       .collect();
-
+    
     return reports as ReportDoc[];
   },
 });
