@@ -5,14 +5,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function OrgSelection() {
   const navigate = useNavigate();
-  const { organization } = useOrganization();
-
-  useEffect(() => {
-    if (organization && organization.slug) {
-      // Once the organization is set, navigate client-side to the dynamic route.
-      navigate(`/dashboard/${organization.slug}/patients`);
-    }
-  }, [organization, navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -24,11 +16,15 @@ export default function OrgSelection() {
 
         <div className="space-y-4 justify-items-center">
           {/* Note: Removed callbacks such as onOrganizationSelect and onOrganizationCreate */}
-          <OrganizationList />
+          <OrganizationList
+          afterCreateOrganizationUrl={(org) => `/dashboard/${org.slug}/patients`}
+          afterSelectPersonalUrl={(user) => `/dashboard/${user.id}/patients`}
+          afterSelectOrganizationUrl={(org) => `/dashboard/${org.slug}/patients`}
+          />
           <Button 
             variant="outline" 
             className="w-full"
-            onClick={() => navigate("/dashboard/default-slug/patients")}
+            onClick={() => navigate("/dashboard/personal/patients")}
           >
             Continue
           </Button>

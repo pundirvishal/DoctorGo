@@ -57,6 +57,7 @@ export const uploadReport = mutation({
 export const getReports = query({
   handler: async (ctx): Promise<ReportDoc[]> => {
     const identity = await ctx.auth.getUserIdentity();
+    console.log("identity", identity);
     if (!identity) throw new Error("Not authenticated");
     
     const orgId = identity.orgId ? identity.orgId.toString() : "personal";
