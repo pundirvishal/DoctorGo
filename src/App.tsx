@@ -14,7 +14,7 @@ export default function App() {
     <>
       <Router>
         <Routes>
-          {/* Public route - redirect based on auth status */}
+          {/* Authentication-based redirects */}
           <Route path="/" element={
             <>
               <SignedOut>
@@ -26,21 +26,21 @@ export default function App() {
             </>
           } />
 
-          {/* Sign-in route */}
+          {/* Public routes */}
           <Route path="/sign-in" element={
             <SignedOut>
               <SignInPage />
             </SignedOut>
           } />
 
-          {/* Org selection (protected) */}
+          {/* Protected routes */}
           <Route path="/org-selection" element={
             <SignedIn>
               <OrgSelection />
             </SignedIn>
           } />
 
-          {/* Dashboard routes (protected) */}
+          {/* Dashboard routes */}
           <Route path="/dashboard/:org" element={
             <SignedIn>
               <DashboardLayout />
@@ -50,9 +50,10 @@ export default function App() {
             <Route path="patients" element={<PatientsPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="members" element={<MembersList />} />
+            <Route path="*" element={<Navigate to="../patients" replace />} />
           </Route>
 
-          {/* Catch-all redirect */}
+          {/* Global redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

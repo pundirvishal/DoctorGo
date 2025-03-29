@@ -4,33 +4,34 @@ import {
     FileText,
     Settings
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { cn } from "../../lib/utils";
 
+// Removed static hrefs from navItems
 const navItems = [
 {
-    href: "/dashboard",
+    key: "overview",
     icon: LayoutDashboard,
     label: "Overview"
 },
 {
-    href: "/dashboard/patients",
+    key: "patients",
     icon: User,
     label: "Patients"
 },
 {
-    href: "/dashboard/reports",
+    key: "reports",
     icon: FileText,
     label: "Reports"
 },
 {
-    href: "/dashboard/team",
+    key: "team",
     icon: User,
     label: "Team"
 },
 {
-    href: "/dashboard/settings",
+    key: "settings",
     icon: Settings,
     label: "Settings"
 }
@@ -39,6 +40,8 @@ const navItems = [
 type DashboardSidebarProps = React.HTMLAttributes<HTMLDivElement>
 
 export function DashboardSidebar({ className }: DashboardSidebarProps) {
+    const { org } = useParams(); // Get organization from URL params
+    
     return (
             <div className={cn("pb-12", className)}>
                 <div className="space-y-4 py-4">
@@ -49,8 +52,8 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
                     <div className="space-y-1">
                         {navItems.map((item) => (
                         <NavLink
-                            key={item.href}
-                            to={item.href}
+                            key={item.key}
+                            to={`/dashboard/${org}/${item.key}`}
                             className={({ isActive }) =>
                             cn(
                                 "w-full justify-start",

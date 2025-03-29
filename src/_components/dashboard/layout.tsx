@@ -1,11 +1,16 @@
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useParams } from 'react-router-dom'
 import { OrgSwitcher } from './org-switcher'
 import { UserButton } from '@clerk/clerk-react'
 import { Button } from '../../components/ui/button'
 import { NavLink } from 'react-router-dom'
 
-
 export function DashboardLayout() {
+  const { org } = useParams<{ org: string }>()
+
+  if (!org) {
+    return <Navigate to="/org-selection" replace />
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="border-b bg-white">
@@ -21,21 +26,21 @@ export function DashboardLayout() {
       <div className="flex">
         <aside className="w-64 border-r bg-white p-4">
           <nav className="flex flex-col gap-1">
-            <NavLink to="/dashboard/patients">
+            <NavLink to={`/dashboard/${org}/patients`}>
               {({ isActive }) => (
                 <Button variant={isActive ? "secondary" : "ghost"} className="w-full justify-start">
                   Patients
                 </Button>
               )}
             </NavLink>
-            <NavLink to="/dashboard/reports">
+            <NavLink to={`/dashboard/${org}/reports`}>
               {({ isActive }) => (
                 <Button variant={isActive ? "secondary" : "ghost"} className="w-full justify-start">
                   Reports
                 </Button>
               )}
             </NavLink>
-            <NavLink to="/dashboard/members">
+            <NavLink to={`/dashboard/${org}/members`}>
               {({ isActive }) => (
                 <Button variant={isActive ? "secondary" : "ghost"} className="w-full justify-start">
                   Team
