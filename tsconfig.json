@@ -23,7 +23,10 @@
   "include": [
     "src",
     "convex",
-    "vite.config.ts"
+    "vite.config.ts",
+    "*.d.ts",
+    "src/**/*",
+    "convex/**/*",
   ],
   "exclude": [
     "node_modules",

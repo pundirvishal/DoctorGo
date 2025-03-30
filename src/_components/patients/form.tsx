@@ -8,8 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { PATIENT_FORM_FIELDS, XRAY_TYPES } from "@/lib/constants";
-import type { XRayType } from "@/lib/constants";
+import { PATIENT_FORM_FIELDS } from "@/lib/constants";
 
 interface PatientFormProps {
   fields: typeof PATIENT_FORM_FIELDS;
@@ -38,12 +37,10 @@ export function PatientForm({ fields }: PatientFormProps) {
     try {
       const formData = new FormData(e.currentTarget as HTMLFormElement);
       const file = formData.get("xray") as File;
-      const xrayType = formData.get("xrayType") as XRayType;
 
       // Validate inputs
       if (!file) throw new Error("No file selected");
       if (file.size > 10 * 1024 * 1024) throw new Error("File too large (max 10MB)");
-      if (!XRAY_TYPES.includes(xrayType)) throw new Error("Invalid X-Ray type");
 
       // Step 1: Get an upload URL
       const uploadUrl = await generateUploadUrl();
@@ -109,15 +106,6 @@ export function PatientForm({ fields }: PatientFormProps) {
                 </option>
               ))}
             </select>
-          ) : field.type === "textarea" ? (
-            <textarea
-              id={field.name}
-              name={field.name}
-              placeholder={field.placeholder}
-              required={field.required}
-              disabled={isSubmitting}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px]"
-            />
           ) : (
             <Input
               id={field.name}
@@ -130,26 +118,6 @@ export function PatientForm({ fields }: PatientFormProps) {
           )}
         </div>
       ))}
-
-      {/* X-Ray Type Selector */}
-      <div className="space-y-2">
-        <Label htmlFor="xrayType">X-Ray Type</Label>
-        <select
-          id="xrayType"
-          name="xrayType"
-          required
-          disabled={isSubmitting}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <option value="">Select X-Ray Type</option>
-          {XRAY_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-      </div>
-
       {/* File Upload */}
       <div className="space-y-2">
         <Label htmlFor="xray">X-Ray Image (JPEG/PNG, max 10MB)</Label>

@@ -1,10 +1,27 @@
+"use client";
+
+import { useState } from "react";
 import { ReportsList } from "@/_components/reports/list";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export default function ReportsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const reports = useQuery(api.reports.getReports) || [];
+  const processReport = useMutation(api.reports.processReport);
+
+  const handleProcessReport = async (reportId: Id<"reports">) => {
+    await processReport({ reportId });
+  };
+
+  const filteredReports = reports.filter(report =>
+    report.patientName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -25,6 +42,8 @@ export default function ReportsPage() {
         <Input
           placeholder="Search reports..."
           className="pl-10"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
@@ -35,7 +54,10 @@ export default function ReportsPage() {
             View All
           </Button>
         </div>
-        <ReportsList />
+        <ReportsList 
+          reports={filteredReports} 
+          onProcessReport={handleProcessReport}
+        />
       </div>
     </div>
   );

@@ -6,8 +6,8 @@ export default defineSchema({
     patientName: v.string(),
     age: v.number(),
     xrayUrl: v.string(),
-    diagnosis: v.string(),  // Must be defined here
-    confidence: v.number(),
+    diagnosis: v.optional(v.string()),
+    confidence: v.optional(v.number()),
     findings: v.string(),
     userId: v.string(),
     orgId: v.string(),

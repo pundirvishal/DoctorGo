@@ -52,13 +52,6 @@ export const NAV_ITEMS = [
       placeholder: "+1234567890",
       required: false,
     },
-    {
-      name: "notes",
-      label: "Clinical Notes",
-      type: "textarea",
-      placeholder: "Any additional information...",
-      required: false,
-    },
   ] as const;
   
 // Report statuses
@@ -78,25 +71,3 @@ export const REPORT_STATUSES = {
   } as const;
   
   export type ReportStatus = keyof typeof REPORT_STATUSES;
-  
-  // Possible diagnosis results (mock for now)
-  export const DIAGNOSIS_RESULTS = [
-    "Normal",
-    "Pneumonia detected",
-    "Tuberculosis suspected",
-    "Fracture identified",
-    "Lung opacity present",
-    "Cardiomegaly observed",
-  ] as const;
-  
-  // X-ray types
-  export const XRAY_TYPES = [
-    "Chest PA",
-    "Chest Lateral",
-    "Abdomen AP",
-    "Skull Lateral",
-    "Spine AP",
-    "Spine Lateral",
-  ] as const;
-  
-  export type XRayType = typeof XRAY_TYPES[number];
