@@ -75,11 +75,13 @@ export default function PatientsPage() {
               )}
 
               <div className="space-y-2">
-                <p className="text-sm">
-                  Diagnosis:{" "}
-                  <span className="font-medium">{report.diagnosis}</span>
-                </p>
-                {report.status === "completed" && (
+                {report.diagnosis && (
+                  <p className="text-sm">
+                    Diagnosis:{" "}
+                    <span className="font-medium">{report.diagnosis}</span>
+                  </p>
+                )}
+                {report.status === "completed" && report.confidence && (
                   <p className="text-sm">
                     Confidence:{" "}
                     <span className="font-medium">
