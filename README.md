@@ -42,5 +42,6 @@ Usage 💡
 	4.	Consult a Doctor (Optional) – Users can share the report with a medical professional.
 
 Contributors 🤝
-	•	Vishal Pundir (GitHub)
-	•	Gagan Verma (GitHub)
+
+	•	Gagan Verma (https://www.github.com/vermagagan)
+	•	Vishal Pundir (https://www.github.com/pundirvishal)
