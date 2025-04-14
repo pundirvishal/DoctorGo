@@ -1,54 +1,47 @@
-# React + TypeScript + Vite
+DoctorGo 🏥
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 AI-powered Chest X-ray Abnormality Detector for lightning-fast diagnosis and reporting.
 
-Currently, two official plugins are available:
+Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+DoctorGo is an AI-driven healthcare platform designed to analyze chest X-rays, detect abnormalities, and provide instant diagnostic reports to patients. Using advanced machine learning models, it ensures accurate, fast, and reliable medical assessments, helping doctors and patients make informed decisions effortlessly.
 
-## Expanding the ESLint configuration
+Features ✨
+	•	🔹 AI-Powered X-ray Analysis – Detect abnormalities in chest X-rays with high accuracy.
+	•	🔹 Instant Diagnosis – Get a detailed report in seconds.
+	•	🔹 Secure Medical Data – Ensures patient confidentiality and data protection.
+	•	🔹 User-Friendly Interface – Simple, intuitive design for both doctors and patients.
+	•	🔹 Scalable & Fast – Lightning-speed processing with minimal latency.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Tech Stack 🛠
+	•	Frontend: React, TypeScript, Vite
+	•	Backend: Node.js (if applicable)
+	•	AI Model: Deep Learning (likely CNN-based for image analysis)
+	•	Database: Convex
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Installation & Setup 🚀
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+To run DoctorGo locally, follow these steps:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# Clone the repository
+git clone https://github.com/pundirvishal/DoctorGo.git  
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+# Navigate into the project directory
+cd DoctorGo  
+
+# Install dependencies
+npm install  
+
+# Start the development server
+npm run dev  
+
+Usage 💡
+	1.	Upload a Chest X-ray – Users can upload an X-ray image for analysis.
+	2.	AI Analysis – The system processes the image using deep learning.
+	3.	Receive Diagnosis – A detailed report is generated instantly.
+	4.	Consult a Doctor (Optional) – Users can share the report with a medical professional.
+
+Contributors 🤝
+
+	•	Gagan Verma (https://www.github.com/vermagagan)
+	•	Vishal Pundir (https://www.github.com/pundirvishal)
