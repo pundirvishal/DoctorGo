@@ -52,7 +52,11 @@ export function ReportCard({ report, onProcess, isProcessing }: ReportCardProps)
                 {report.diagnosis}
                 {report.confidence && (
                   <span className="text-blue-600 ml-2">
-                    ({(report.confidence).toFixed(1)}% confidence)
+                    {report.confidence !== undefined && ( // Check if confidence exists
+                  <span className="text-blue-600 ml-2">
+                    ({(Number(report.confidence.toFixed(2)) * 100)}% confidence)
+                  </span>
+                    )}
                   </span>
                 )}
               </p>

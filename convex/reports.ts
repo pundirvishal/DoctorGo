@@ -1,13 +1,14 @@
 import { query, mutation, action } from "./_generated/server";
 import { v } from "convex/values";
 import { api } from "./_generated/api";
-import OpenAI from "openai";
+import OpenAI from 'openai';
 import { Id } from "./_generated/dataModel";
 
-const deepseek = new OpenAI({
-  baseURL: 'https://api.deepseek.com',
-  apiKey: process.env.VITE_DEEPSEEK_API_KEY // Replace with your actual key
+const openai = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY, // Replace with your actual OpenRouter API Key
 });
+
 
 interface ReportDoc {
   _id: Id<"reports">;
@@ -29,7 +30,6 @@ export const processReport = mutation({
     reportId: v.id("reports"),
   },
   handler: async (ctx, args) => {
-    // Schedule the analysis to run immediately
     await ctx.scheduler.runAfter(0, api.reports.analyzeReport, {
       reportId: args.reportId
     });
@@ -41,45 +41,75 @@ export const analyzeReport = action({
     reportId: v.id("reports"),
   },
   handler: async (ctx, args) => {
-    const report = await ctx.runQuery(api.reports.getReportById, { 
-      reportId: args.reportId 
+    const report = await ctx.runQuery(api.reports.getReportById, {
+      reportId: args.reportId
     });
-    
+
     if (!report) throw new Error("Report not found");
 
     try {
-      const systemPrompt = `You are an AI medical diagnostic assistant. analyze the provided X-ray image and provide a diagnosis.
-      even if you detect the smallest abnormality, please provide a detailed diagnosis. check for lung cancer, damaged lungs and any other abnormalities.
-      if there are no errors please also mention what do you see in the image in findings.
-        The patient is ${report.patientName}, age ${report.age}. if any error please provide a detailed error message in findings.
-        The X-ray image URL is: ${report.xrayUrl}.
-        Please provide your response in valid JSON format with these exact keys:
-        {
-          "diagnosis": "string",
-          "confidence": number,
-          "findings": "string"
-        }`;
+      const systemPrompt = `As a highly skilled radiologist specializing in analyzing x-ray images, you are an expert in identifying bone fractures on multi-region x-ray data. You can identify fractures in anatomical body regions, including lower limb, upper limb, lumbar, hips, and knees, among others.
 
-      const completion = await deepseek.chat.completions.create({
-        model: "deepseek-chat",
-        response_format: { type: "json_object" }, // Enforce JSON response
+Your responsibilities are:
+1. Detailed analysis: Thoroughly analyze the provided X-ray image, focusing on identifying fractures or any abnormal findings, even the smallest abnormality. Check for lung cancer, damaged lungs, and any other abnormalities.
+2. Report Findings: Document all your findings. Clearly articulate these findings in a structured format. If no errors are found, also mention what you see in the image.
+3. Recommend treatment: Based on your analysis, always suggest the next steps. If fractures or any abnormal findings are present, recommend the best-known treatment.
+
+Scope of Response: Only respond if the image is an x-ray image. If the image quality prevents you from making an analysis, mention it to the user.
+Disclaimer: Add a disclaimer at the end of your response if you have made an analysis. Tell the user that your analysis is only based on statistical data and emphasize that it is very important to consult a real doctor before making any medical decisions.
+
+The patient is ${report.patientName}, age ${report.age}. The X-ray image URL is: ${report.xrayUrl}.
+Please provide your response in valid JSON format with these exact keys:
+{
+  "diagnosis": "string",
+  "confidence": number,
+  "findings": "string"
+}`;
+
+      const completion = await openai.chat.completions.create({
+        model: "google/gemini-2.0-flash-001",
         messages: [
-          { role: "system", content: systemPrompt },
+          {
+            role: "system",
+            content: systemPrompt
+          },
           {
             role: "user",
-            content: JSON.stringify({
-              xray_image_url: report.xrayUrl,
-              patient_age: report.age,
-              patient_name: report.patientName
-            })
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  xray_image_url: report.xrayUrl,
+                  patient_age: report.age,
+                  patient_name: report.patientName
+                })
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: report.xrayUrl
+                }
+              }
+            ]
           }
-        ]
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 500,
       });
-      console.log("API response:", completion);
-      const resultContent = completion.choices[0].message.content;
+
+
+      console.log("API Response:", completion);
+      if (!completion.choices || completion.choices.length === 0) {
+        throw new Error("No choices returned from the API."); // More specific error
+      }
+
+      const resultContent = completion.choices[0].message?.content; // Optional chaining
+
+      if (!resultContent) {
+        throw new Error("Empty API response or missing content."); // More specific error
+      }
       if (!resultContent) throw new Error("Empty API response");
-      
-      // Parse with error handling
+
       let result;
       try {
         result = JSON.parse(resultContent);
@@ -87,7 +117,6 @@ export const analyzeReport = action({
         throw new Error(`Invalid JSON response: ${resultContent}`);
       }
 
-      // Validate required fields
       if (!result.diagnosis || !result.confidence || !result.findings) {
         throw new Error("Response missing required fields");
       }
@@ -108,6 +137,7 @@ export const analyzeReport = action({
     }
   }
 });
+
 
 export const getReportById = query({
   args: { reportId: v.id("reports") },
@@ -137,6 +167,7 @@ export const updateReport = mutation({
     });
   }
 });
+
 
 export const uploadReport = mutation({
   args: {
@@ -172,9 +203,9 @@ export const getReports = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
-    
+
     const orgId = identity.orgId ? identity.orgId.toString() : "personal";
-    
+
     return await ctx.db
       .query("reports")
       .withIndex("by_org", q => q.eq("orgId", orgId))
@@ -182,3 +213,4 @@ export const getReports = query({
       .collect();
   }
 });
+
