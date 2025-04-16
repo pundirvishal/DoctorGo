@@ -23,7 +23,6 @@ interface ReportCardProps {
 export function ReportCard({ report, onProcess, isProcessing }: ReportCardProps) {
   const statusKey = report.status.toUpperCase() as keyof typeof REPORT_STATUSES;
   const status = REPORT_STATUSES[statusKey];
-  
 
   return (
     <div className="border rounded-lg p-4 space-y-3">
@@ -52,18 +51,13 @@ export function ReportCard({ report, onProcess, isProcessing }: ReportCardProps)
                 {report.diagnosis}
                 {report.confidence && (
                   <span className="text-blue-600 ml-2">
-                    {report.confidence !== undefined && ( // Check if confidence exists
-                  <span className="text-blue-600 ml-2">
                     ({(Number(report.confidence.toFixed(2)) * 100)}% confidence)
-                  </span>
-                    )}
                   </span>
                 )}
               </p>
             </div>
           )}
 
-          {/* Findings Section - Now more prominent */}
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <h4 className="font-medium text-gray-800 mb-2">Clinical Findings</h4>
             {report.findings ? (
@@ -81,8 +75,8 @@ export function ReportCard({ report, onProcess, isProcessing }: ReportCardProps)
         </div>
       )}
 
-      {/* Pending/Error Section */}
-      {(report.status === "pending" || report.status === "error") && onProcess && (
+      {/* Process Report Button - Always Displayed */}
+      {onProcess && (
         <div className="space-y-3">
           {report.status === "error" && (
             <div className="bg-red-50 p-3 rounded-lg border border-red-200">
@@ -94,7 +88,7 @@ export function ReportCard({ report, onProcess, isProcessing }: ReportCardProps)
           )}
 
           <Button
-            variant={report.status === "error" ? "destructive" : "outline"}
+            variant="outline"
             size="sm"
             onClick={onProcess}
             disabled={isProcessing}
@@ -106,7 +100,7 @@ export function ReportCard({ report, onProcess, isProcessing }: ReportCardProps)
                 Processing...
               </>
             ) : (
-              report.status === "error" ? "Retry Processing" : "Process Now"
+              "Process"
             )}
           </Button>
         </div>

@@ -6,6 +6,7 @@ export default defineSchema({
     patientName: v.string(),
     age: v.number(),
     xrayUrl: v.string(),
+    processedImageStorageId: v.optional(v.string()),
     diagnosis: v.optional(v.string()),
     confidence: v.optional(v.number()),
     findings: v.string(),

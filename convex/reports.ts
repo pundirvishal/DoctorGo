@@ -23,14 +23,15 @@ interface ReportDoc {
   orgId: string;
   status: "pending" | "completed" | "error";
   createdAt: number;
+  processedImageStorageId?: string; // Optional field for processed image storage ID
 }
 
 export const processReport = mutation({
   args: {
-    reportId: v.id("reports"),
+    reportId: v.id("reports")
   },
   handler: async (ctx, args) => {
-    await ctx.scheduler.runAfter(0, api.reports.analyzeReport, {
+    await ctx.scheduler.runAfter(0, api.reports.analyzeReport2, {
       reportId: args.reportId
     });
   },
@@ -157,6 +158,8 @@ export const updateReport = mutation({
     diagnosis: v.optional(v.string()),
     confidence: v.optional(v.number()),
     findings: v.optional(v.string()),
+    processedImageStorageId: v.optional(v.string()), // Add this field
+    xrayUrl: v.optional(v.string()), // Optional field for original X-ray URL
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.reportId, {
@@ -164,8 +167,12 @@ export const updateReport = mutation({
       ...(args.diagnosis !== undefined && { diagnosis: args.diagnosis }),
       ...(args.confidence !== undefined && { confidence: args.confidence }),
       ...(args.findings !== undefined && { findings: args.findings }),
+      ...(args.processedImageStorageId !== undefined && {
+        processedImageStorageId: args.processedImageStorageId,
+      }),
+      ...(args.xrayUrl !== undefined && { xrayUrl: args.xrayUrl }), // Patch xrayUrl
     });
-  }
+  },
 });
 
 
@@ -215,3 +222,77 @@ export const getReports = query({
   }
 });
 
+
+export const analyzeReport2 = action({
+  args: {
+    reportId: v.id("reports"),
+  },
+  handler: async (ctx, args) => {
+    // Fetch the report from the database
+    const report = await ctx.runQuery(api.reports.getReportById, {
+      reportId: args.reportId,
+    });
+
+    if (!report) throw new Error("Report not found");
+
+    try {
+      // Generate an upload URL for the processed image
+      const convexUploadUrl = await ctx.runMutation(api.files.generateUploadUrl);
+
+      // Prepare the payload for the Python server
+      const payload = {
+        xray_url: report.xrayUrl,        // Original X-ray URL
+        patient_name: report.patientName, // Patient name
+        age: report.age,                 // Patient age
+        convex_upload_url: convexUploadUrl, // Upload URL for processed image
+      };
+
+      // Send a POST request to the Python server
+      const response = await fetch("https://19c4-103-87-57-0.ngrok-free.app/analyze_report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error from Python server:", errorText);
+        throw new Error(`Failed to analyze report: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      // Validate required fields in the response
+      if (
+        !result.diagnosis ||
+        result.confidence === undefined ||
+        !result.findings ||
+        !result.processed_image_storage_id
+      ) {
+        throw new Error("Invalid response format from Python server");
+      }
+      const imageUrl = await ctx.storage.getUrl(result.processed_image_storage_id);
+
+      // Update the report in the Convex database
+      await ctx.runMutation(api.reports.updateReport, {
+        reportId: args.reportId,
+        status: "completed",
+        diagnosis: result.diagnosis,
+        confidence: result.confidence,
+        findings: result.findings,
+        processedImageStorageId: result.processed_image_storage_id, // Save processed image storage ID
+        xrayUrl: imageUrl || "", // Keep the original X-ray URL
+      });
+    } catch (error) {
+      console.error("Error processing report:", error);
+      // Update the report with an error status in case of failure
+      await ctx.runMutation(api.reports.updateReport, {
+        reportId: args.reportId,
+        status: "error",
+        findings: error instanceof Error ? error.message : "Processing failed",
+      });
+    }
+  },
+});

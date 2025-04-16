@@ -43,58 +43,58 @@ export default function PatientsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {reports.map((report) => (
-            <div
-              key={report._id}
-              className="border rounded-lg p-4 space-y-4 hover:bg-muted/50 transition-colors"
-            >
-              <div className="space-y-1">
-                <h3 className="font-semibold text-lg">{report.patientName}</h3>
-                <p className="text-sm">Age: {report.age}</p>
+          <div
+            key={report._id}
+            className="border rounded-lg p-4 space-y-4 hover:bg-muted/50 transition-colors"
+          >
+            <div className="space-y-1">
+              <h3 className="font-semibold text-lg">{report.patientName}</h3>
+              <p className="text-sm">Age: {report.age}</p>
+              <p className="text-sm">
+                Status:{" "}
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    report.status === "completed"
+                      ? "bg-green-100 text-green-800"
+                      : report.status === "error"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  {report.status}
+                </span>
+              </p>
+            </div>
+
+            {report.xrayUrl && (
+              <img
+                src={report.xrayUrl}
+                alt="X-Ray preview"
+                className="rounded-md object-contain w-full h-48"
+              />
+            )}
+
+            <div className="space-y-2">
+              {report.diagnosis && (
                 <p className="text-sm">
-                  Status:{" "}
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      report.status === "completed"
-                        ? "bg-green-100 text-green-800"
-                        : report.status === "error"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    {report.status}
+                  Diagnosis:{" "}
+                  <span className="font-medium">{report.diagnosis}</span>
+                </p>
+              )}
+              {report.status === "completed" && report.confidence && (
+                <p className="text-sm">
+                  Confidence:{" "}
+                  <span className="font-medium">
+                    {(report.confidence * 100).toFixed(1)}%
                   </span>
                 </p>
-              </div>
-
-              {report.xrayUrl && (
-                <img
-                  src={report.xrayUrl}
-                  alt="X-Ray preview"
-                  className="rounded-md object-cover w-full h-32"
-                />
               )}
-
-              <div className="space-y-2">
-                {report.diagnosis && (
-                  <p className="text-sm">
-                    Diagnosis:{" "}
-                    <span className="font-medium">{report.diagnosis}</span>
-                  </p>
-                )}
-                {report.status === "completed" && report.confidence && (
-                  <p className="text-sm">
-                    Confidence:{" "}
-                    <span className="font-medium">
-                      {(report.confidence * 100).toFixed(1)}%
-                    </span>
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  {new Date(report.createdAt).toLocaleDateString()}
-                </p>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                {new Date(report.createdAt).toLocaleDateString()}
+              </p>
             </div>
-          ))}
+          </div>
+        ))}
         </div>
       )}
     </div>
