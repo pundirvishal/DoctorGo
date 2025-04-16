@@ -208,7 +208,8 @@ export const getReports = query({
 
     return await ctx.db
       .query("reports")
-      .withIndex("by_org", q => q.eq("orgId", orgId))
+      .withIndex("by_user", q => q.eq("userId", identity.subject))
+      .filter((q) => q.eq(q.field("orgId"), orgId))
       .order("desc")
       .collect();
   }

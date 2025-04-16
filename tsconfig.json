@@ -23,6 +23,7 @@
   "include": [
     "src",
     "convex",
+    "context",
     "vite.config.ts",
     "*.d.ts",
     "src/**/*",

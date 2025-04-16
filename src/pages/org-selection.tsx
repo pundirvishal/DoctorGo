@@ -13,6 +13,7 @@ export default function OrgSelection() {
 
         <div className="space-y-4 w-full justify-items-center">
           <OrganizationList
+            hidePersonal={true}
             afterCreateOrganizationUrl={(org) => `/dashboard/${org.slug}/patients`}
             afterSelectOrganizationUrl={(org) => `/dashboard/${org.slug}/patients`}
           />

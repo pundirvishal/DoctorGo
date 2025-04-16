@@ -1,5 +1,4 @@
-// src/App.tsx
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import OrgSelection from "./pages/org-selection";
 import { DashboardLayout } from "@/_components/dashboard/layout";
@@ -7,7 +6,24 @@ import PatientsPage from "./pages/dashboard/patients";
 import ReportsPage from "./pages/dashboard/reports";
 import { MembersList } from "./pages/dashboard/members";
 import SignInPage from "./pages/SignIn";
-import { SignedIn, SignedOut } from '@clerk/clerk-react'
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+
+// Import OrgProvider
+import { OrgProvider } from "../context/orgProvider";
+import { JSX } from "react";
+
+// Helper component to validate orgId
+function ValidateOrg({ children }: { children: JSX.Element }) {
+  const { org } = useParams<{ org: string }>();
+
+  // Check if the org is "personal" and redirect to /org-selection if so
+  if (org === "personal") {
+    return <Navigate to="/org-selection" replace />;
+  }
+
+  // Render children if org is valid
+  return children;
+}
 
 export default function App() {
   return (
@@ -43,7 +59,12 @@ export default function App() {
           {/* Dashboard routes */}
           <Route path="/dashboard/:org" element={
             <SignedIn>
-              <DashboardLayout />
+              <ValidateOrg>
+                {/* Wrap dashboard routes with OrgProvider */}
+                <OrgProvider>
+                  <DashboardLayout />
+                </OrgProvider>
+              </ValidateOrg>
             </SignedIn>
           }>
             <Route index element={<Navigate to="patients" replace />} />
