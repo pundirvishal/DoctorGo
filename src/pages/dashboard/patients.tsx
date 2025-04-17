@@ -20,11 +20,11 @@ export default function PatientsPage() {
         <UploadButton />
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+      <div className="relative group">
+        <Search className="absolute left-4 top-3 h-4 w-4 text-muted-foreground transition-all duration-200 ease-in-out group-hover:translate-x-[-4px]" />
         <Input
-          placeholder="Search patients..."
-          className="pl-10"
+          placeholder="    Search patients..."
+          className="pl-8 transition-all duration-200 ease-in-out group-hover:translate-x-[4px]"
         />
       </div>
 
@@ -55,9 +55,9 @@ export default function PatientsPage() {
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       report.status === "completed"
-                        ? "bg-green-100 text-green-800"
+                        ? "bg-green-500 text-green-800"
                         : report.status === "error"
-                        ? "bg-red-100 text-red-800"
+                        ? "bg-red-500 text-black-100"
                         : "bg-gray-100 text-gray-800"
                     }`}
                   >
@@ -79,14 +79,6 @@ export default function PatientsPage() {
                   <p className="text-sm">
                     Diagnosis:{" "}
                     <span className="font-medium">{report.diagnosis}</span>
-                  </p>
-                )}
-                {report.status === "completed" && report.confidence && (
-                  <p className="text-sm">
-                    Confidence:{" "}
-                    <span className="font-medium">
-                      {(report.confidence * 100).toFixed(1)}%
-                    </span>
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground">

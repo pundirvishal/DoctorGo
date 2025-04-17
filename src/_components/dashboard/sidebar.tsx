@@ -40,38 +40,38 @@ const navItems = [
 type DashboardSidebarProps = React.HTMLAttributes<HTMLDivElement>
 
 export function DashboardSidebar({ className }: DashboardSidebarProps) {
-    const { org } = useParams(); // Get organization from URL params
-    
+    const { org } = useParams();
+
     return (
-            <div className={cn("pb-12", className)}>
-                <div className="space-y-4 py-4">
-                    <div className="px-4 py-2">
-                    <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">
+        <div className={cn("pb-12 bg-secondary text-text-light", className)}>
+            <div className="space-y-4 py-4">
+                <div className="px-4 py-2">
+                    <h2 className="mb-4 px-2 text-lg font-semibold tracking-tight text-highlight">
                         Dashboard
                     </h2>
                     <div className="space-y-1">
                         {navItems.map((item) => (
-                        <NavLink
-                            key={item.key}
-                            to={`/dashboard/${org}/${item.key}`}
-                            className={({ isActive }) =>
-                            cn(
-                                "w-full justify-start",
-                                isActive
-                                ? "bg-accent text-accent-foreground"
-                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                            )
-                            }
-                        >
-                            <Button variant="ghost" className="w-full justify-start">
-                            <item.icon className="mr-2 h-4 w-4" />
-                            {item.label}
-                            </Button>
-                        </NavLink>
+                            <NavLink
+                                key={item.key}
+                                to={`/dashboard/${org}/${item.key}`}
+                                className={({ isActive }) =>
+                                    cn(
+                                        "w-full justify-start rounded-md transition-all duration-300",
+                                        isActive
+                                            ? "bg-gradient-to-r from-highlight to-accent text-white font-bold shadow-md"
+                                            : "text-text-muted hover:bg-accent hover:text-white"
+                                    )
+                                }
+                            >
+                                <Button variant="ghost" className="w-full justify-start">
+                                    <item.icon className="mr-2 h-5 w-5" />
+                                    {item.label}
+                                </Button>
+                            </NavLink>
                         ))}
-                    </div>
                     </div>
                 </div>
             </div>
+        </div>
     );
 }

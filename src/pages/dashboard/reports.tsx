@@ -37,7 +37,7 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      <div className="relative">
+      <div className="fade-in relative">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search reports..."

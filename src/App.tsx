@@ -7,6 +7,8 @@ import ReportsPage from "./pages/dashboard/reports";
 import { MembersList } from "./pages/dashboard/members";
 import SignInPage from "./pages/SignIn";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import "./App.css"; // Ensure this file contains transition styles
 
 // Import OrgProvider
 import { OrgProvider } from "../context/orgProvider";
@@ -27,58 +29,70 @@ function ValidateOrg({ children }: { children: JSX.Element }) {
 
 export default function App() {
   return (
-    <>
+    <div className="min-h-screen bg-[var(--color-background)] fade-in">
       <Router>
         <Routes>
-          {/* Authentication-based redirects */}
-          <Route path="/" element={
-            <>
-              <SignedOut>
-                <Navigate to="/sign-in" replace />
-              </SignedOut>
-              <SignedIn>
-                <Navigate to="/org-selection" replace />
-              </SignedIn>
-            </>
-          } />
-
-          {/* Public routes */}
-          <Route path="/sign-in" element={
-            <SignedOut>
-              <SignInPage />
-            </SignedOut>
-          } />
-
-          {/* Protected routes */}
-          <Route path="/org-selection" element={
-            <SignedIn>
-              <OrgSelection />
-            </SignedIn>
-          } />
-
-          {/* Dashboard routes */}
-          <Route path="/dashboard/:org" element={
-            <SignedIn>
-              <ValidateOrg>
-                {/* Wrap dashboard routes with OrgProvider */}
-                <OrgProvider>
-                  <DashboardLayout />
-                </OrgProvider>
-              </ValidateOrg>
-            </SignedIn>
-          }>
-            <Route index element={<Navigate to="patients" replace />} />
-            <Route path="patients" element={<PatientsPage />} />
-            <Route path="reports" element={<ReportsPage />} />
-            <Route path="members" element={<MembersList />} />
-            <Route path="*" element={<Navigate to="../patients" replace />} />
-          </Route>
-
-          {/* Global redirect */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route
+            path="*"
+            element={
+              <TransitionGroup>
+                <CSSTransition timeout={300} classNames="fade">
+                  <Routes>
+                    <Route
+                      path="/"
+                      element={
+                        <>
+                          <SignedOut>
+                            <Navigate to="/sign-in" replace />
+                          </SignedOut>
+                          <SignedIn>
+                            <Navigate to="/org-selection" replace />
+                          </SignedIn>
+                        </>
+                      }
+                    />
+                    <Route
+                      path="/sign-in"
+                      element={
+                        <SignedOut>
+                          <SignInPage />
+                        </SignedOut>
+                      }
+                    />
+                    <Route
+                      path="/org-selection"
+                      element={
+                        <SignedIn>
+                          <OrgSelection />
+                        </SignedIn>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/:org"
+                      element={
+                        <SignedIn>
+                          <ValidateOrg>
+                            <OrgProvider>
+                              <DashboardLayout />
+                            </OrgProvider>
+                          </ValidateOrg>
+                        </SignedIn>
+                      }
+                    >
+                      <Route index element={<Navigate to="patients" replace />} />
+                      <Route path="patients" element={<PatientsPage />} />
+                      <Route path="reports" element={<ReportsPage />} />
+                      <Route path="members" element={<MembersList />} />
+                      <Route path="*" element={<Navigate to="../patients" replace />} />
+                    </Route>
+                  </Routes>
+                </CSSTransition>
+              </TransitionGroup>
+            }
+          />
         </Routes>
       </Router>
       <Toaster position="bottom-right" />
-    </>
+    </div>
   );
 }

@@ -1,2 +1,125 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
+:root {
+  --color-primary: #1f2937;
+  --color-secondary: #374151;
+  --color-accent: #60a5fa;
+  --color-highlight: #10b981;
+  --color-background: #111827;
+  --color-card-background: #1f2937;
+  --color-text-light: #ffffff;
+  --color-text-muted: #9ca3af;
+  --color-text-primary: #f3f4f6;
+  --color-text-secondary: #d1d5db;
+  --transition-duration: 0.3s;
+  --transition-ease: ease-in-out;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text-light);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+p, span, li {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition-duration) var(--transition-ease);
+}
+
+a:hover {
+  color: var(--color-highlight);
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--color-secondary);
+  color: var(--color-text-light);
+  border: none;
+  border-radius: 8px;
+  transition: background-color var(--transition-duration), transform var(--transition-duration);
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--color-accent);
+  transform: scale(1.03);
+}
+
+.card {
+  background-color: var(--color-card-background);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: box-shadow var(--transition-duration);
+}
+
+.card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rounded {
+  border-radius: 8px;
+}
+
+.shadow {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+input, textarea, select {
+  font-family: inherit;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-primary);
+  border: 1px solid #374151;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  color: var(--color-text-light);
+  transition: border-color var(--transition-duration);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-highlight);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+}
+
+.fade-in {
+  animation: fadeIn 0.6s var(--transition-ease) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

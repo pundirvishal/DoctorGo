@@ -12,10 +12,10 @@ export function DashboardLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="border-b bg-white">
+    <div className="min-h-screen bg-background fade-in">
+      <nav className="border-b bg-primary text-text-light shadow-md">
         <div className="flex h-16 items-center px-4">
-          <h1 className="text-xl font-bold">MedScan AI</h1>
+          <h1 className="text-xl font-bold tracking-wide">MedScan AI</h1>
           <div className="ml-auto flex items-center gap-4">
             <OrgSwitcher />
             <UserButton afterSignOutUrl="/" />
@@ -24,8 +24,8 @@ export function DashboardLayout() {
       </nav>
       
       <div className="flex">
-        <aside className="w-64 border-r bg-white p-4">
-          <nav className="flex flex-col gap-1">
+        <aside className="w-64 border-r bg-secondary text-text-light p-4 slide-in">
+          <nav className="flex flex-col gap-2">
             <NavLink to={`/dashboard/${org}/patients`}>
               {({ isActive }) => (
                 <Button variant={isActive ? "secondary" : "ghost"} className="w-full justify-start">
@@ -50,7 +50,7 @@ export function DashboardLayout() {
           </nav>
         </aside>
         
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-8 slide-in">
           <Outlet />
         </main>
       </div>
