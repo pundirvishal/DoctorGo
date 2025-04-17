@@ -248,7 +248,7 @@ export const analyzeReport2 = action({
       };
 
       // Send a POST request to the Python server
-      const response = await fetch("https://19c4-103-87-57-0.ngrok-free.app/analyze_report", {
+      const response = await fetch("https://328d-2401-4900-a000-db58-3563-c1e4-f433-c0a3.ngrok-free.app/analyze_report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

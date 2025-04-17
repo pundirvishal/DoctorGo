@@ -81,14 +81,6 @@ export default function PatientsPage() {
                   <span className="font-medium">{report.diagnosis}</span>
                 </p>
               )}
-              {report.status === "completed" && report.confidence && (
-                <p className="text-sm">
-                  Confidence:{" "}
-                  <span className="font-medium">
-                    {(report.confidence * 100).toFixed(1)}%
-                  </span>
-                </p>
-              )}
               <p className="text-xs text-muted-foreground">
                 {new Date(report.createdAt).toLocaleDateString()}
               </p>
